@@ -69,7 +69,10 @@
         <Button Command = "{Binding SaveFilterCommand}" Grid.Column="2" FontWeight="Bold" VerticalAlignment="Center" Content="Save new filter as"/>
         <!--I don't know if this part of window is needed-->
         <StackPanel Grid.Row="1" Grid.Column="2">
-            <TextBox VerticalAlignment="Center" Text="{Binding NewFilterName}"/>
+            <DockPanel>
+                <Button Content="..." DockPanel.Dock="Right" Command="{Binding FilterPathTargetCommand}"/>
+                <TextBox VerticalAlignment="Center" Text="{Binding FilterTargetName}"/>
+            </DockPanel>
         </StackPanel>
     </Grid>
 </UserControl>

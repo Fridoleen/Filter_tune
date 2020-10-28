@@ -25,11 +25,23 @@ namespace FilterTuneWPF
                 NotifyPropertyChanged("ChosenTemplate");
             }
         }
-        public string NewFilterName { get; set; }
+        private Settings FTSettings; 
+        public string FilterTargetName {
+            get 
+            {
+                return (FTSettings.FilterFileTarget);
+            }
+            set 
+            {
+                FTSettings.FilterFileTarget = value;
+                NotifyPropertyChanged("FilterTargetName");
+            }
+        }
         public ICommand SaveFilterCommand { get; set; }
         public ICommand SaveTemplateCommand { get; set; }
         public ICommand RemoveTemplateCommand { get; set; }
         public ICommand FilterPathSourceCommand { get; set; }
+        public ICommand FilterPathTargetCommand { get; set; }
         private ObservableCollection<TemplateViewModel> LoadTemplates(int numberOfTemplates)
         {
             var templates = new ObservableCollection<TemplateViewModel>();
@@ -39,10 +51,9 @@ namespace FilterTuneWPF
             }
             return (templates);
         }
-        private void SaveFilter()
+        private void SaveFilter() //relies on the library
         {
-            NewFilterName = "Black";
-            NotifyPropertyChanged("NewFilterName");
+            
         }
         private ObservableCollection<TemplateViewModel> MockSavedTemplates { get; set; }
         public void SaveTemplate() //update Templates with NewTemplateName value of chosenTemplate
@@ -57,7 +68,6 @@ namespace FilterTuneWPF
                 Templates.Remove(ChosenTemplate);
             }           
         }
-        Settings FTSettings;
         private string OpenFilterDialogue()
         {
             var dlg = new Microsoft.Win32.OpenFileDialog();
@@ -94,8 +104,7 @@ namespace FilterTuneWPF
         {
             var getFile = OpenFilterDialogue();
             FTSettings.FilterPathSource = Path.GetDirectoryName(getFile);
-            FTSettings.FilterFileSource = Path.GetFileNameWithoutExtension(getFile);
-            RefreshFilterList();
+            FTSettings.FilterFileSource = Path.GetFileNameWithoutExtension(getFile);         
             SaveSettings();
         }
         private void GetFilterPathTarget()
@@ -108,6 +117,11 @@ namespace FilterTuneWPF
         private void LoadSettings()
         {
             var XMLSerializer = new XmlSerializer(typeof(Settings));
+            if (!File.Exists("Settings.xml"))
+            {
+                SaveSettings();
+                return;
+            }
             using (var fs = File.Open("Settings.xml", FileMode.Open))
             {
                 FTSettings=(Settings)XMLSerializer.Deserialize(fs);
@@ -131,9 +145,10 @@ namespace FilterTuneWPF
             Templates = LoadTemplates(5);
             ChosenTemplate = Templates.FirstOrDefault();
             MockSavedTemplates = LoadTemplates(5);
-            ViewFilters = new SourceFilters(new String[0], String.Empty);           
+            ViewFilters = new SourceFilters(new String[0], String.Empty);
             SaveTemplateCommand = new GenericCommand(x => SaveTemplate());
-            FilterPathSourceCommand = new GenericCommand(x => GetFilterPathSource());
+            FilterPathSourceCommand = new GenericCommand(x => { GetFilterPathSource(); RefreshFilterList(); });
+            FilterPathTargetCommand = new GenericCommand(x => { GetFilterPathTarget(); NotifyPropertyChanged("FilterTargetName");});
             LoadSettings();
             RefreshFilterList();
         }

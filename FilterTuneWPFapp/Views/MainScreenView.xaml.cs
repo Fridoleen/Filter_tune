@@ -23,6 +23,8 @@ namespace FilterTuneWPF.Views
             InitializeComponent();
         }
 
+
+
         ////private void TemplateKeyDown(object sender, KeyEventArgs e)
         ////{
         ////    if (e.Key == Key.Delete && ((TextBox)sender).IsReadOnly)
