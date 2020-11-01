@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FilterTuneLibrary;
+using FilterTuneWPF_dll;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
@@ -14,6 +16,9 @@ namespace FilterTuneWPF
 {
     class MainScreenViewModel : Notifier
     {
+        #region Values
+        private string templateFileName = "";
+        private TemplateManager TemplatesSource;
         private TemplateViewModel chosenTemplate;
         public ObservableCollection<TemplateViewModel> Templates { get; set; }
         public SourceFilters ViewFilters { get; set; }
@@ -37,20 +42,52 @@ namespace FilterTuneWPF
                 NotifyPropertyChanged("FilterTargetName");
             }
         }
+        #endregion
+
+        #region Commands
         public ICommand SaveFilterCommand { get; set; }
         public ICommand SaveTemplateCommand { get; set; }
         public ICommand RemoveTemplateCommand { get; set; }
         public ICommand FilterPathSourceCommand { get; set; }
         public ICommand FilterPathTargetCommand { get; set; }
-        private ObservableCollection<TemplateViewModel> LoadTemplates(int numberOfTemplates)
+        #endregion
+
+        #region Saving and loading
+        private ObservableCollection<TemplateViewModel> LoadTemplates(int numberOfTemplates=5)
         {
             var templates = new ObservableCollection<TemplateViewModel>();
-            for (int i = 0; i < numberOfTemplates; i++)
+            //creating mock templates if there is something wrong with the file
+            if (templateFileName == "")
             {
-                templates.Add(new TemplateViewModel($"This is the {i}th selector", $"This is the {i}th parameter", $"Template {i}"));
+                for (int i = 0; i < numberOfTemplates; i++)
+                {
+                    templates.Add(new TemplateViewModel($"This is the {i}th selector", $"This is the {i}th parameter", $"Template {i}"));
+                }
+            }
+            else
+            {
+                //var templatesSource = new TemplateManager(Directory.GetCurrentDirectory()+"\\"+ templateFileName);
+                var templatesFromFile = TemplatesSource.GetTemplates();
+                foreach (FilterTemplate template in templatesFromFile.Templates)
+                {
+                    templates.Add(new TemplateViewModel(template.SelectorsText, template.ParametersText, template.Name));
+                }
             }
             return (templates);
         }
+        private void SaveTemplatesToFile()
+        {
+            // transfrom Templates to TemplateList
+            List<FilterTemplate> templatesList = new List<FilterTemplate>();
+            foreach (var template in Templates) //selectors parameters templatename
+            {
+                var libTemplate = new FilterTemplate(template.TemplateName, template.Selectors, template.Parameters);
+                templatesList.Add(libTemplate);
+            }
+            var templatesLibList = new TemplateList(templatesList);
+            TemplatesSource.SaveTemplates(templatesLibList);
+        }
+
         private void SaveFilter() //relies on the library
         {
             
@@ -103,6 +140,7 @@ namespace FilterTuneWPF
         private void GetFilterPathSource()
         {
             var getFile = OpenFilterDialogue();
+            if (getFile == "") return;
             FTSettings.FilterPathSource = Path.GetDirectoryName(getFile);
             FTSettings.FilterFileSource = Path.GetFileNameWithoutExtension(getFile);         
             SaveSettings();
@@ -110,6 +148,7 @@ namespace FilterTuneWPF
         private void GetFilterPathTarget()
         {
             var getFile = OpenFilterDialogue();
+            if (getFile == "") return;
             FTSettings.FilterPathTarget = Path.GetDirectoryName(getFile);
             FTSettings.FilterFileTarget = Path.GetFileNameWithoutExtension(getFile);
             SaveSettings();
@@ -137,18 +176,21 @@ namespace FilterTuneWPF
             }
 
         }
+        #endregion
         public MainScreenViewModel() //Initializing variables for main screen
         {
             FTSettings = new Settings("", "", "", "");
+            Templates = LoadTemplates();
+            ChosenTemplate = Templates.FirstOrDefault();
+            MockSavedTemplates = LoadTemplates();
+            ViewFilters = new SourceFilters(new String[0], String.Empty);
+            #region Commands
             SaveFilterCommand = new GenericCommand(x => SaveFilter());
             RemoveTemplateCommand = new GenericCommand(x => RemoveTemplate());
-            Templates = LoadTemplates(5);
-            ChosenTemplate = Templates.FirstOrDefault();
-            MockSavedTemplates = LoadTemplates(5);
-            ViewFilters = new SourceFilters(new String[0], String.Empty);
             SaveTemplateCommand = new GenericCommand(x => SaveTemplate());
             FilterPathSourceCommand = new GenericCommand(x => { GetFilterPathSource(); RefreshFilterList(); });
             FilterPathTargetCommand = new GenericCommand(x => { GetFilterPathTarget(); NotifyPropertyChanged("FilterTargetName");});
+            #endregion
             LoadSettings();
             RefreshFilterList();
         }

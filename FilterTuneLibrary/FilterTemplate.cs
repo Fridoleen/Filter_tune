@@ -13,6 +13,48 @@ namespace FilterTuneWPF_dll
         public List<StringPair> Selectors { get; set; }
         public List<StringPair> Parameters { get; set; }
 
+        public string SelectorsText
+        {
+            get
+            {    
+                var SelectorsText = "";
+                foreach (StringPair selector in Selectors)
+                {
+                    SelectorsText += selector.Name + selector.Value + "\n";
+                }
+                return SelectorsText;
+            }
+        }
+        public string ParametersText
+        {
+            get
+            {
+                var ParametersText = "";
+                foreach (StringPair parameter in Parameters)
+                {
+                    ParametersText += parameter.Name + parameter.Value + "\n";
+                }
+                return ParametersText;
+            }
+        }
+
+        public FilterTemplate(string name, string select, string param)
+        {
+            this.Name = name;
+            this.Selectors = new List<StringPair>();
+            this.Parameters = new List<StringPair>();
+            foreach (string s in select.Split(new[] {Environment.NewLine}, StringSplitOptions.None))
+            {
+                var spair = new StringPair(s);
+                this.Selectors.Add(spair);
+            }
+            foreach (string s in param.Split(new[] { Environment.NewLine }, StringSplitOptions.None))
+            {
+                var spair = new StringPair(s);
+                this.Parameters.Add(spair);
+            }
+        }
+
         /// <summary>
         /// Creates default FilterTemplate
         /// </summary>
