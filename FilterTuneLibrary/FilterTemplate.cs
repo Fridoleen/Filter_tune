@@ -10,8 +10,8 @@ namespace FilterTuneWPF_dll
     public class FilterTemplate
     {
         public string Name { get; set; }
-        public List<StringPair> Selectors { get; set; }
-        public List<StringPair> Parameters { get; set; }
+        public List<StringPair> Selectors { get; set; } = new List<StringPair>();
+        public List<StringPair> Parameters { get; set; } = new List<StringPair>();
 
         public string SelectorsText
         {

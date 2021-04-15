@@ -90,7 +90,7 @@ namespace FilterTuneWPF
 
         private void SaveFilter() //relies on the library
         {
-            
+            SaveTemplatesToFile();
         }
         private ObservableCollection<TemplateViewModel> MockSavedTemplates { get; set; }
         public void SaveTemplate() //update Templates with NewTemplateName value of chosenTemplate
