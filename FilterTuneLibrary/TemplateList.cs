@@ -9,7 +9,13 @@ namespace FilterTuneLibrary
     public class TemplateList
     {
         public List<FilterTemplate> Templates;
+        public TemplateList() 
+        {
+            Templates = new List<FilterTemplate>();
+            Templates.Add(new FilterTemplate("Default"));
+        }
         public IEnumerable<string> Names => Templates.Select(x => x.Name);
+
         /// <summary>
         /// Creates instance of class from FilterTemplate list
         /// </summary>
@@ -18,6 +24,7 @@ namespace FilterTuneLibrary
         {
             this.Templates = tempList;
         }
+
         /// <summary>
         /// Adds FilterTemplate to the list
         /// </summary>
@@ -26,6 +33,7 @@ namespace FilterTuneLibrary
         {
             Templates.Add(temp);
         }
+
         /// <summary>
         /// Applies all templates in list to the contents of .filter file saved in FilterFile instance
         /// </summary>
@@ -34,6 +42,7 @@ namespace FilterTuneLibrary
         {
             foreach (FilterTemplate temp in Templates) temp.ApplyTemplate(file);
         }
+
         /// <summary>
         /// Returns true if template was found and removed, elswise returns false
         /// </summary>

@@ -27,13 +27,23 @@ namespace FilterTuneWPF_dll
         }
 
         /// <summary>
-        /// Deserializes list of FilterTemplates from XML file
+        /// Deserializes list of FilterTemplates from XML file, if it exists, elsewise returns empty container
         /// </summary>
         public TemplateList GetTemplates()    
         {
-            using (FileStream fs = new FileStream(TempFilePath, FileMode.OpenOrCreate))
+            FileInfo file = new FileInfo(TempFilePath);
+
+            if (!file.Exists || file.Length == 0)
             {
-                return (TemplateList)formatter.Deserialize(fs);
+                TemplateList templateList = new TemplateList();
+                return templateList;
+            }
+            else
+            {
+                using (FileStream fs = new FileStream(TempFilePath, FileMode.OpenOrCreate))
+                {
+                    return (TemplateList)formatter.Deserialize(fs);
+                }
             }
         }
         
@@ -44,7 +54,7 @@ namespace FilterTuneWPF_dll
         {
             using( FileStream fs = new FileStream(TempFilePath, FileMode.Create))
             {
-                formatter.Serialize(fs, templateList.Templates);
+                formatter.Serialize(fs, templateList);
             }
         }
     }

@@ -17,7 +17,7 @@ namespace FilterTuneWPF
     class MainScreenViewModel : Notifier
     {
         #region Values
-        private string templateFileName = "";
+        private string templateFileName = "TemplatesCollection.xml";
         private TemplateManager TemplatesSource;
         private TemplateViewModel chosenTemplate;
         public ObservableCollection<TemplateViewModel> Templates { get; set; }
@@ -96,6 +96,7 @@ namespace FilterTuneWPF
         public void SaveTemplate() //update Templates with NewTemplateName value of chosenTemplate
         {
             Templates.Add(new TemplateViewModel(chosenTemplate.Selectors, chosenTemplate.Parameters, chosenTemplate.NewTemplateName));//TODO check if it's an old template; provide the choice to overwrite or add new
+            SaveTemplatesToFile();
         }
         public void RemoveTemplate() 
         {
@@ -179,6 +180,7 @@ namespace FilterTuneWPF
         #endregion
         public MainScreenViewModel() //Initializing variables for main screen
         {
+            TemplatesSource = new TemplateManager(templateFileName);
             FTSettings = new Settings("", "", "", "");
             Templates = LoadTemplates();
             ChosenTemplate = Templates.FirstOrDefault();
