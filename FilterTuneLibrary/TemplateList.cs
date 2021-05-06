@@ -12,7 +12,6 @@ namespace FilterTuneLibrary
         public TemplateList() 
         {
             Templates = new List<FilterTemplate>();
-            Templates.Add(new FilterTemplate("Default"));
         }
         public IEnumerable<string> Names => Templates.Select(x => x.Name);
 

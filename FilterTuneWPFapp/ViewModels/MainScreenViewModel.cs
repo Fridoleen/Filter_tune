@@ -53,7 +53,7 @@ namespace FilterTuneWPF
         #endregion
 
         #region Saving and loading
-        private ObservableCollection<TemplateViewModel> LoadTemplates(int numberOfTemplates=5)
+        private ObservableCollection<TemplateViewModel> LoadTemplates(int numberOfTemplates=5)//???? WHY 5
         {
             var templates = new ObservableCollection<TemplateViewModel>();
             //creating mock templates if there is something wrong with the file
