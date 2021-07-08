@@ -35,7 +35,9 @@ namespace FilterTuneWPF_dll
 
             if (!file.Exists || file.Length == 0)
             {
+                //Default template must be non-empty. No better way to create it exists in the library.
                 TemplateList templateList = new TemplateList();
+                templateList.AddTemplate(new FilterTemplate("Template", "Default selector", "Default parameter"));
                 return templateList;
             }
             else

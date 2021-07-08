@@ -46,6 +46,14 @@ namespace FilterTuneWPF_dll
             }
         }
 
+        public void ApplyTemplates(IEnumerable<FilterTemplate> FTemplates)
+        {
+            foreach (var FTemplate in FTemplates)
+            {
+                ApplyTemplate(FTemplate);
+            }
+        }
+
         /// <summary>
         /// Returns text "Show" blocks, that are situated after [start] line and contain selectors
         /// </summary>

@@ -17,7 +17,7 @@ namespace FilterTuneWPF
     class MainScreenViewModel : Notifier
     {
         #region Values
-        private string templateFileName = "TemplatesCollection.xml";
+        private string templateFileName = "TestTemplatesCollection.xml";
         private TemplateManager TemplatesSource;
         private TemplateViewModel chosenTemplate;
         public ObservableCollection<TemplateViewModel> Templates { get; set; }
@@ -53,26 +53,17 @@ namespace FilterTuneWPF
         #endregion
 
         #region Saving and loading
-        private ObservableCollection<TemplateViewModel> LoadTemplates(int numberOfTemplates=5)//???? WHY 5
+        private ObservableCollection<TemplateViewModel> LoadTemplates(int numberOfTemplates=5)//???? WHY 5//Because some number was needed as a placeholder
         {
             var templates = new ObservableCollection<TemplateViewModel>();
-            //creating mock templates if there is something wrong with the file
-            if (templateFileName == "")
+            //creating mock templates if there is something wrong with the file            
+            //var templatesSource = new TemplateManager(Directory.GetCurrentDirectory()+"\\"+ templateFileName);
+            var templatesFromFile = TemplatesSource.GetTemplates();
+            foreach (FilterTemplate template in templatesFromFile.Templates)
             {
-                for (int i = 0; i < numberOfTemplates; i++)
-                {
-                    templates.Add(new TemplateViewModel($"This is the {i}th selector", $"This is the {i}th parameter", $"Template {i}"));
-                }
+                templates.Add(new TemplateViewModel(template.SelectorsText, template.ParametersText, template.Name));
             }
-            else
-            {
-                //var templatesSource = new TemplateManager(Directory.GetCurrentDirectory()+"\\"+ templateFileName);
-                var templatesFromFile = TemplatesSource.GetTemplates();
-                foreach (FilterTemplate template in templatesFromFile.Templates)
-                {
-                    templates.Add(new TemplateViewModel(template.SelectorsText, template.ParametersText, template.Name));
-                }
-            }
+            
             return (templates);
         }
         private void SaveTemplatesToFile()
@@ -91,6 +82,21 @@ namespace FilterTuneWPF
         private void SaveFilter() //relies on the library
         {
             SaveTemplatesToFile();
+            // form checked (.Active) templates into TemplateList
+            List<FilterTemplate> templatesList = new List<FilterTemplate>();
+            foreach (var template in Templates) //selectors parameters templatename
+            {
+                if (template.Active)
+                {
+                    var libTemplate = new FilterTemplate(template.TemplateName, template.Selectors, template.Parameters);
+                    templatesList.Add(libTemplate);
+                }
+            }
+            var templatesLibList = new TemplateList(templatesList);
+            var SourceAndTarget = new FilterFile(FTSettings.FilterPathSource + "\\" + FTSettings.FilterFileSource + ".filter");
+            SourceAndTarget.NewFilterPath = FTSettings.FilterPathTarget + "\\" + FTSettings.FilterFileTarget + ".filter";
+            templatesLibList.ApplyTemplates(SourceAndTarget);
+            // create a workaround to save into FilterTargetName the modified ViewFilters.Selected
         }
         private ObservableCollection<TemplateViewModel> MockSavedTemplates { get; set; }
         public void SaveTemplate() //update Templates with NewTemplateName value of chosenTemplate
