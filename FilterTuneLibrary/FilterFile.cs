@@ -15,6 +15,8 @@ namespace FilterTuneWPF_dll
         public string NewFilterPath { get; set; }
 
         public string[] FilterContent { get; set; }
+
+        private List<Block> blocks;
         /// <summary>
         /// Creates instance of FilterFile associated with a specified file
         /// </summary>
@@ -28,7 +30,32 @@ namespace FilterTuneWPF_dll
                 FilterContent = File.ReadAllLines(filePath);
                 OriginalFilterPath = fileInf.DirectoryName;
                 OriginalFileName = fileInf.Name;
+                blocks = new List<Block>();
             }
+        } 
+
+
+        //Check how \n works in string so that there is no double symbol \n
+        public void ParseBlocks()
+        {
+            int startBlock = 0;
+            int endBlock = 0;
+            var block = new Block(startBlock, endBlock);
+
+
+            for (int i = 0; i < FilterContent.Length; i++)
+            {
+                if (FilterContent[i] == "\n" || block.Start != i)
+                {
+                    block.Finish = i;
+                    block = new Block(i + 1, i + 1);
+                }
+                else
+                {
+                    block.AddContents(FilterContent[i] + "\n");
+                }
+            }
+            
         }
 
         /// <summary>
