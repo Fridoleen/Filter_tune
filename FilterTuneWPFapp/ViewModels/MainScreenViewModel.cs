@@ -20,6 +20,7 @@ namespace FilterTuneWPF
         private string templateFileName = "TestTemplatesCollection.xml";
         private TemplateManager TemplatesSource;
         private TemplateViewModel chosenTemplate;
+        private string triviaContent;
         public ObservableCollection<TemplateViewModel> Templates { get; set; }
         public SourceFilters ViewFilters { get; set; }
         public TemplateViewModel ChosenTemplate
@@ -28,6 +29,14 @@ namespace FilterTuneWPF
             {
                 chosenTemplate = value;
                 NotifyPropertyChanged("ChosenTemplate");
+            }
+        }
+        public string TriviaContent
+        {
+            get => triviaContent; set
+            {
+                triviaContent = value;
+                NotifyPropertyChanged("TriviaContent");
             }
         }
         private Settings FTSettings; 
@@ -92,10 +101,10 @@ namespace FilterTuneWPF
                     templatesList.Add(libTemplate);
                 }
             }
-            var templatesLibList = new TemplateList(templatesList);
-            var SourceAndTarget = new FilterFile(FTSettings.FilterPathSource + "\\" + FTSettings.FilterFileSource + ".filter");
-            SourceAndTarget.NewFilterPath = FTSettings.FilterPathTarget + "\\" + FTSettings.FilterFileTarget + ".filter";
-            templatesLibList.ApplyTemplates(SourceAndTarget);
+            var SourceAndTarget = new FilterFile($"{FTSettings.FilterPathSource}\\{FTSettings.FilterFileSource}.filter");
+            //SourceAndTarget.NewFilterPath = FTSettings.FilterPathTarget + "\\" + FTSettings.FilterFileTarget + ".filter";
+            SourceAndTarget.ApplyTemplates(templatesList);
+            SourceAndTarget.CreateNewFilter(FTSettings.FilterPathTarget + "\\" + FTSettings.FilterFileTarget + ".filter");
             // create a workaround to save into FilterTargetName the modified ViewFilters.Selected
         }
         private ObservableCollection<TemplateViewModel> MockSavedTemplates { get; set; }
@@ -183,6 +192,14 @@ namespace FilterTuneWPF
             }
 
         }
+        private string LoadTrivia()
+        {
+            if (File.Exists("Trivia.txt"))
+            {
+                return (File.ReadAllText("Trivia.txt"));
+            }
+            else return ("");
+        }
         #endregion
         public MainScreenViewModel() //Initializing variables for main screen
         {
@@ -192,6 +209,7 @@ namespace FilterTuneWPF
             ChosenTemplate = Templates.FirstOrDefault();
             MockSavedTemplates = LoadTemplates();
             ViewFilters = new SourceFilters(new String[0], String.Empty);
+            TriviaContent = LoadTrivia();
             #region Commands
             SaveFilterCommand = new GenericCommand(x => SaveFilter());
             RemoveTemplateCommand = new GenericCommand(x => RemoveTemplate());

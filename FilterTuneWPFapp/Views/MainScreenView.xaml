@@ -56,14 +56,25 @@
             <!-- Template content area -->
             <local:TemplateContentView DataContext="{Binding ChosenTemplate}"/>
             <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Center">
-            <Button 
-                Margin="20 0 10 0" 
-                HorizontalAlignment="Left"         
-                Content="Save template as"
-                Command="{Binding SaveTemplateCommand}"
-                        />
-            <TextBox DataContext="{Binding ChosenTemplate}" Text="{Binding NewTemplateName}" VerticalAlignment="Center"/>
-        </StackPanel>
+                <Button 
+                    Margin="20 0 10 0" 
+                    HorizontalAlignment="Left"         
+                    Content="Save template as"
+                    Command="{Binding SaveTemplateCommand}"
+                />
+                <TextBox DataContext="{Binding ChosenTemplate}" Text="{Binding NewTemplateName}" VerticalAlignment="Center"/>
+            </StackPanel>
+            <!--- Popup with info-->
+            <Label Grid.Row="2" Content="?" VerticalAlignment="Center" HorizontalAlignment="Right" Name="TriviaLabel"/>
+            <Popup PlacementTarget="{Binding ElementName=TriviaLabel}"
+                   IsOpen="{Binding IsMouseOver, ElementName=TriviaLabel, Mode=OneWay}"
+                   Placement="Left"
+                   HorizontalOffset="{Binding ActualHeight, ElementName=TriviaLabel}"
+                >
+                <Border Background="LightBlue" Padding="1px">
+                    <TextBlock Text="{Binding TriviaContent}" Background="FloralWhite"/>
+                </Border>
+            </Popup>
         </Grid>
 
         <Button Command = "{Binding SaveFilterCommand}" Grid.Column="2" FontWeight="Bold" VerticalAlignment="Center" Content="Save new filter as"/>

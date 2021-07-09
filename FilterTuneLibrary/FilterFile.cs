@@ -28,7 +28,6 @@ namespace FilterTuneWPF_dll
                 FilterContent = File.ReadAllLines(filePath);
                 OriginalFilterPath = fileInf.DirectoryName;
                 OriginalFileName = fileInf.Name;
-                NewFilterPath = OriginalFilterPath;
             }
         }
 
@@ -168,11 +167,10 @@ namespace FilterTuneWPF_dll
         /// <summary>
         /// Creates new txt file in the folder of original .filter file and writes FilterContent there 
         /// </summary>
-        /// <param name="filterName"></param>
-        public void CreateNewFilter(string filterName) 
+        /// <param name="newFilterPath"></param>
+        public void CreateNewFilter(string newFilterPath) 
         {
-            filterName += ".txt";
-            File.WriteAllLines(NewFilterPath + @"\" + filterName, FilterContent);
+            File.WriteAllLines(newFilterPath, FilterContent);
         }
     }
 }
