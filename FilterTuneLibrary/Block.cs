@@ -11,7 +11,7 @@ namespace FilterTuneWPF_dll
     /// </summary>
     public class Block
     {
-        private string contents;
+        public string Contents { get; set; }
         public int Start { get; set; }
         public int Finish { get; set; }
 
@@ -23,14 +23,14 @@ namespace FilterTuneWPF_dll
 
         public Block(int _st, int _fn, string _contents)
         {
-            contents = _contents;
+            Contents = _contents;
             Start = _st;
             Finish = _fn;
         }
 
         public void AddContents(string newText)
         {
-            contents += newText;
+            Contents += newText;
         }
     }
 }
