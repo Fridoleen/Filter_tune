@@ -12,6 +12,9 @@ namespace FilterTuneWPF_dll
         public string OriginalFilterPath { get; private set; }
         public string OriginalFileName { get; private set; }
         public string NewFilterPath { get; set; }
+        public delegate void ParameterValueSetter(string textBlock, StringPair parameter);
+
+        ParameterValueSetter _setter;
 
         private List<Block> blocks;
 
@@ -33,6 +36,39 @@ namespace FilterTuneWPF_dll
                 ParseBlocks(FilterContent);
             }
         } 
+
+        public void RegisterParameterSetter(ParameterValueSetter setter)
+        {
+            _setter = setter;
+        }
+
+        private void DefaultParameterSetter(string text, StringPair par)
+        {
+                            //int paramPosition = modifiedBlock.IndexOf(par.Name, 0);
+
+                //if (paramPosition > -1)
+                //{
+                //    int comm = CommentStart(paramPosition, modifiedBlock);
+                //    int valueStartPosition = paramPosition + par.Name.Length + 1;
+
+                //    // erase all line contents after parameter till \n or comment and add parameter value
+                //    if (comm> -1)                                              
+                //    {
+                //        modifiedBlock.Remove(valueStartPosition, comm);
+                //        modifiedBlock.Insert(valueStartPosition, par.Value);
+                //    }
+                //    else                                                         
+                //    {
+                //        modifiedBlock.Remove(valueStartPosition, modifiedBlock.IndexOf('\n', valueStartPosition));
+                //        modifiedBlock.Insert(valueStartPosition, par.Value);
+                //    }
+                //}
+                ////If parameter not found 
+                //else
+                //{
+                //    modifiedBlock += $"{par.Name} {par.Value}\n";
+                //}                
+        }
 
 
         //Check how \n works in string so that there is no double symbol \n
@@ -151,29 +187,7 @@ namespace FilterTuneWPF_dll
 
             foreach (StringPair par in parameters)
             {
-                int paramPosition = modifiedBlock.IndexOf(par.Name, 0);
-
-                if (paramPosition > -1)
-                {
-                    int comm = CommentStart(paramPosition, modifiedBlock);
-                    int valueStartPosition = paramPosition + par.Name.Length + 1;
-
-                    // erase all line contents after parameter till \n or comment and add parameter value
-                    if (comm> -1)                                              
-                    {
-                        modifiedBlock.Remove(valueStartPosition, comm);
-                        modifiedBlock.Insert(valueStartPosition, par.Value);
-                    }
-                    else                                                         
-                    {
-                        modifiedBlock.Remove(valueStartPosition, modifiedBlock.IndexOf('\n', valueStartPosition));
-                        modifiedBlock.Insert(valueStartPosition, par.Value);
-                    }
-                }
-                else
-                {
-                    modifiedBlock += $"{par.Name} {par.Value}\n";
-                }                
+                if(_setter != null) _setter(modifiedBlock, par);
             }
 
             blocks[blockNumber].Contents = modifiedBlock;
@@ -203,4 +217,3 @@ namespace FilterTuneWPF_dll
         }
     }
 }
-//In some cases BaseType parameter list is of the size of a MULTIPLE LINES - this may cause some problems
