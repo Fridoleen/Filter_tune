@@ -44,30 +44,30 @@ namespace FilterTuneWPF_dll
 
         private void DefaultParameterSetter(string text, StringPair par)
         {
-                            //int paramPosition = modifiedBlock.IndexOf(par.Name, 0);
+            int paramPosition = text.IndexOf(par.Name, 0);
 
-                //if (paramPosition > -1)
-                //{
-                //    int comm = CommentStart(paramPosition, modifiedBlock);
-                //    int valueStartPosition = paramPosition + par.Name.Length + 1;
+            if (paramPosition > -1)
+            {
+                int comm = CommentStart(paramPosition, text);
+                int valueStartPosition = paramPosition + par.Name.Length + 1;
 
-                //    // erase all line contents after parameter till \n or comment and add parameter value
-                //    if (comm> -1)                                              
-                //    {
-                //        modifiedBlock.Remove(valueStartPosition, comm);
-                //        modifiedBlock.Insert(valueStartPosition, par.Value);
-                //    }
-                //    else                                                         
-                //    {
-                //        modifiedBlock.Remove(valueStartPosition, modifiedBlock.IndexOf('\n', valueStartPosition));
-                //        modifiedBlock.Insert(valueStartPosition, par.Value);
-                //    }
-                //}
-                ////If parameter not found 
-                //else
-                //{
-                //    modifiedBlock += $"{par.Name} {par.Value}\n";
-                //}                
+                // erase all line contents after parameter till \n or comment and add parameter value
+                if (comm > -1)
+                {
+                    text.Remove(valueStartPosition, comm);
+                    text.Insert(valueStartPosition, par.Value);
+                }
+                else
+                {
+                    text.Remove(valueStartPosition, text.IndexOf('\n', valueStartPosition));
+                    text.Insert(valueStartPosition, par.Value);
+                }
+            }
+            //If parameter not found 
+            else
+            {
+                text += $"{par.Name} {par.Value}\n";
+            }
         }
 
 
@@ -183,14 +183,12 @@ namespace FilterTuneWPF_dll
         /// <param name="parameters"></param>
         private void SetValuesAtBlock(int blockNumber, List<StringPair> parameters)
         {
-            string modifiedBlock = blocks[blockNumber].Contents;
+            if (_setter == null) _setter = DefaultParameterSetter;
 
             foreach (StringPair par in parameters)
-            {
-                if(_setter != null) _setter(modifiedBlock, par);
+            {                
+                _setter(blocks[blockNumber].Contents, par);
             }
-
-            blocks[blockNumber].Contents = modifiedBlock;
         }
 
         private int CommentStart(int start, string str)
